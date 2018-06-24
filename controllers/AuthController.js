@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 
 const router = express.Router();
 
-router.use(bodyParser.urlencoded({ extended: false }));
+// For parsing body to json
 router.use(bodyParser.json());
 
 router.post('/login', (req, res) => {
@@ -19,23 +19,13 @@ router.post('/login', (req, res) => {
     if (!isPasswordMatch) return res.status(401).send({ auth: false, token: null });
 
     // Creating JWT
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SALT, {
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SALT, {
       expiresIn: 86400, // expires in 24 hours
     });
 
+    // Sending the token
     res.status(200).send({ auth: true, token });
   });
-});
-
-const pass = bcrypt.hashSync('Hello');
-
-router.get('/', (req, res) => {
-  User.create({
-    name: 'Hello',
-    username: 'Hahaha',
-    password: pass,
-  });
-  res.status(200).send('Done');
 });
 
 module.exports = router;

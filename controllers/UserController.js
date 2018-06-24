@@ -7,7 +7,6 @@ const Patron = require('../models/Patron');
 
 const router = express.Router();
 
-router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 router.post('/patron', (req, res) => {
@@ -48,13 +47,15 @@ router.delete('/patron', (req, res) => {
   Patron.findById(patronId, (err, patron) => {
     if (err) { res.status(500).send('Not found'); }
     if (patron) {
-      userId = patron.id;
+      userId = patron.userRef;
       User.findByIdAndRemove(userId, (err) => {
         if (err) { res.status(500).send('Error Deleting Patron'); }
-        Patron.findByIdAndRemove(patronId, (err) => {
-          if (err) { res.status(500).send('Error Deleting Patron'); }
-          else { res.status(200).send('Success'); }
-        });
+        else {
+          Patron.findByIdAndRemove(patronId, (err) => {
+            if (err) { res.status(500).send('Error Deleting Patron'); }
+            else { res.status(200).send('Success'); }
+          });
+        }
       });
     }
   });
