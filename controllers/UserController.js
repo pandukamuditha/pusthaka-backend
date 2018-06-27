@@ -28,7 +28,7 @@ router.post('/patron', (req, res) => {
   });
 });
 
-router.post('/add_admin', (req, res) => {
+router.post('/admin', (req, res) => {
   User.create({
     name: req.body.name,
     username: req.body.name,

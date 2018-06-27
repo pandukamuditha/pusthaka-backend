@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const router = express.Router();
 
 // For parsing body to json
+router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 router.post('/login', (req, res) => {
@@ -24,8 +25,10 @@ router.post('/login', (req, res) => {
     });
 
     // Sending the token
-    res.status(200).send({ auth: true, token });
+    res.status(200).send({ auth: true, token, expiresIn: 86400, role: user.role });
   });
 });
+
+
 
 module.exports = router;

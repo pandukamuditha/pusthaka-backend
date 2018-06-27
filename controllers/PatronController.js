@@ -8,7 +8,7 @@ const TokenVerification = require('./TokenVerification');
 
 const router = express.Router();
 
-router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: false }));
 
 router.get('/profile', TokenVerification, (req, res) => {
   Patron.findOne({ userRef: req.userId }).populate('userRef', 'name').exec((err, patron) => {
