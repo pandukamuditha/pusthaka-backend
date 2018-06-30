@@ -20,10 +20,12 @@ app.get('/api', (req, res) => {
 const AuthController = require('./controllers/AuthController');
 const UserController = require('./controllers/UserController');
 const PatronController = require('./controllers/PatronController');
+const BookController = require('./controllers/BookController');
 
 app.use('/api/auth', AuthController);
 app.use('/api/user', UserController);
 app.use('/api/patron', PatronController);
+app.use('/api/books', BookController);
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'));
 

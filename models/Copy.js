@@ -1,4 +1,4 @@
-const { mongoose } = require('mongoose');
+const mongoose= require('mongoose');
 const { Schema } = require('mongoose');
 
 const copySchema = Schema({
@@ -11,6 +11,10 @@ const copySchema = Schema({
     type: Schema.Types.ObjectId,
     ref: 'Lending',
   }],
+  isAvailable: {
+    type: Boolean,
+    required: true
+  }
 });
 
-module.exports = mongoose.model('Copy', copySchema);
+module.exports = mongoose.model('Copy', copySchema, 'copies');
