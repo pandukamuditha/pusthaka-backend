@@ -17,11 +17,7 @@ const bookSchema = Schema({
   isbn: {
     type: Number,
     required: true,
-  },
-  copies: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Copy',
-  }]
+  }
 });
 
 module.exports = mongoose.model('Book', bookSchema);

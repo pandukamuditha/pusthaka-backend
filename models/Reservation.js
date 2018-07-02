@@ -1,4 +1,4 @@
-const { mongoose } = require('mongoose');
+const mongoose = require('mongoose');
 const { Schema } = require('mongoose');
 
 const reservationSchema = Schema({
@@ -7,9 +7,9 @@ const reservationSchema = Schema({
     ref: 'Book',
     required: true,
   },
-  patron: {
+  user: {
     type: Schema.Types.ObjectId,
-    ref: 'Patron',
+    ref: 'User',
     required: true,
   },
   date: {

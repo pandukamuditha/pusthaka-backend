@@ -7,14 +7,10 @@ const copySchema = Schema({
     ref: 'Book',
     required: true,
   },
-  lendings: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Lending',
-  }],
   isAvailable: {
     type: Boolean,
     required: true
   }
-});
+}, { collection: 'copies' });
 
 module.exports = mongoose.model('Copy', copySchema, 'copies');

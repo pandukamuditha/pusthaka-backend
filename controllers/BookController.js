@@ -10,7 +10,7 @@ router.use(bodyParser.urlencoded({ extended: false }));
 
 router.get('/new', TokenVerification, (req, res) => {
   if (req.query.category === 'all') {
-    Book.find(null, null, { sort: { _id: -1 }, limit: 20 }).populate('copies').exec((err, books) => {
+    Book.find(null, null, { sort: { _id: -1 }, limit: 20 }).exec((err, books) => {
       if (err) {
         res.status(500).send('Server error. Please try again later.');
       } else {
@@ -19,7 +19,7 @@ router.get('/new', TokenVerification, (req, res) => {
     });
   } else if (req.query.category) {
     Book.find({ category: req.query.category }, null, { sort: { _id: -1 }, limit: 20 })
-      .populate('copies').exec((err, books) => {
+      .exec((err, books) => {
         if (err || !books) {
           res.status(500).send('Server error. Please try again later.');
         } else {
@@ -37,7 +37,7 @@ router.get('/search', TokenVerification, (req, res) => {
           { title: new RegExp(req.query.query, "i") },
           { author: new RegExp(req.query.query, "i") }
         ]
-      }).populate('copies').exec((err, books) => {
+      }).exec((err, books) => {
         if (err) {
           res.status(500).send('Server error. Please try again later.');
         } else if (books.length == 0) {
@@ -57,7 +57,7 @@ router.get('/search', TokenVerification, (req, res) => {
             ]
           },
           { category: req.query.category }]
-      }).populate('copies').exec((err, books) => {
+      }).exec((err, books) => {
         if (err) {
           res.status(500).send('Server error. Please try again later.');
         } else if (books.length == 0) {
@@ -70,12 +70,24 @@ router.get('/search', TokenVerification, (req, res) => {
 });
 
 router.get('/:id', TokenVerification, (req, res) => {
-  Book.findById(req.params.id).populate('copies').exec((err, book) => {
+  Book.findById(req.params.id).exec((err, book) => {
     if (err) { res.status(500).send('Server error. Please try again later.'); }
     else if (!book) { res.status(500).send('Book not found.'); }
     else {
-      res.send(book);
+      Copy.find({ book: req.params.id }, (err, copies) => {
+        if (err) { res.status(500).send('Server error. Please try again later.'); }
+        else if (copies.length == 0) { res.status(500).send('Copies not found.'); }
+        else {
+          res.send({ book: book, copies: copies });
+        }
+      });
     }
+  });
+});
+
+router.get('/copy/:id', (req, res) => {
+  Copy.find({ _id: req.params.id }).exec((err, copy) => {
+    res.send(copy);
   });
 });
 
