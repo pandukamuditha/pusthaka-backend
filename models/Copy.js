@@ -9,7 +9,8 @@ const copySchema = Schema({
   },
   isAvailable: {
     type: Boolean,
-    required: true
+    required: true,
+    default: true
   }
 }, { collection: 'copies' });
 

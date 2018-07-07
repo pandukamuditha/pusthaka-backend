@@ -15,20 +15,10 @@ router.post('/', TokenVerification, (req, res) => {
     Reservation.create({
       book: req.body.book,
       user: req.userId,
-      date: Date.now(),
-      isCompleted: false
     }, (err, reservation) => {
       if (err) { res.status(500).send('Server error. Please try again later.'); }
       else if (reservation) {
-        Copy.findByIdAndUpdate(
-          req.body._id,
-          {
-            isAvailable: false
-          },
-          (err, reservation) => {
-            if (err) { res.status(500).send('Server error. Please try again later.'); }
-            else { res.send(reservation); }
-          })
+        res.send(reservation);
       }
     });
   } else {
@@ -36,15 +26,127 @@ router.post('/', TokenVerification, (req, res) => {
   }
 });
 
-router.get('/user/:id', TokenVerification, (req, res) => {
-  if (req.userId == req.params.id || req.userRole == 'admin') {
-    Reservation.find({ user: req.params.id }, (err, reservations) => {
+router.delete('/:id', TokenVerification, (req, res) => {
+  if (req.userRole == 'patron') {
+    Reservation.findByIdAndRemove(req.params.id, (err, result) => {
       if (err) { res.status(500).send('Server error. Please try again later.'); }
-      else { res.send(reservations); }
+      else if (result) {
+        res.send(result);
+      }
     });
+  } else {
+    res.status(400);
+  }
+});
+
+router.get('/user/:id/:type', TokenVerification, (req, res) => {
+
+  if (req.userId == req.params.id || req.userRole == 'admin') {
+
+    if (req.params.type == 'all') {
+      Reservation.find({
+        user: req.params.id
+      }).populate('book').exec((err, reservations) => {
+        if (err) { res.status(500).send('Server error. Please try again later.'); }
+        else { res.send(reservations); }
+      });
+    } else if (req.params.type == 'valid') {
+      Reservation.find(
+        {
+          user: req.params.id,
+          createdAt: {
+            $gt: Date.now() - 86400000
+          }
+        }).populate('book').exec((err, reservations) => {
+          if (err) { res.status(500).send('Server error. Please try again later.'); }
+          else { res.send(reservations); }
+        });
+    }
+
   } else {
     res.send(401);
   }
+
 });
+
+
+router.get('/book/:id/:type', TokenVerification, (req, res) => {
+
+  if (req.params.type == 'all') {
+    Reservation.find({
+      book: req.params.id
+    }, (err, reservations) => {
+      if (err) { res.status(500).send('Server error. Please try again later.'); }
+      else { res.send(reservations); }
+    });
+  } else if (req.params.type == 'valid') {
+    Reservation.find(
+      {
+        book: req.params.id,
+        createdAt: {
+          $gt: Date.now() - 86400000
+        }
+      }, (err, reservations) => {
+        if (err) { res.status(500).send('Server error. Please try again later.'); }
+        else { res.send(reservations); }
+      });
+  }
+
+});
+
+
+router.get('/book/:id/:type', TokenVerification, (req, res) => {
+
+  if (req.params.type == 'all') {
+    Reservation.find({
+      book: req.params.id
+    }, (err, reservations) => {
+      if (err) { res.status(500).send('Server error. Please try again later.'); }
+      else { res.send(reservations); }
+    });
+  } else if (req.params.type == 'valid') {
+    Reservation.find(
+      {
+        book: req.params.id,
+        createdAt: {
+          $gt: Date.now() - 86400000
+        }
+      }, (err, reservations) => {
+        if (err) { res.status(500).send('Server error. Please try again later.'); }
+        else { res.send(reservations); }
+      });
+  }
+
+});
+
+router.get('/:type', TokenVerification, (req, res) => {
+
+  if (req.userRole == 'admin') {
+
+    if (req.params.type == 'all') {
+      Reservation.find({
+      }).populate('user')
+        .populate('book').exec((err, reservations) => {
+          if (err) { res.status(500).send('Server error. Please try again later.'); }
+          else { res.send(reservations); }
+        });
+    } else if (req.params.type == 'valid') {
+      Reservation.find(
+        {
+          createdAt: {
+            $gt: Date.now() - 86400000
+          }
+        }, (err, reservations) => {
+          if (err) { res.status(500).send('Server error. Please try again later.'); }
+          else { res.send(reservations); }
+        });
+    }
+
+  } else {
+    res.sendStatus(401);
+  }
+
+});
+
 
 module.exports = router;

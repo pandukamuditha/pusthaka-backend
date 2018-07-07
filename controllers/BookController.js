@@ -6,7 +6,7 @@ const Copy = require('../models/Copy');
 
 const router = express.Router();
 
-router.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.json());
 
 router.get('/new', TokenVerification, (req, res) => {
   if (req.query.category === 'all') {
@@ -27,6 +27,23 @@ router.get('/new', TokenVerification, (req, res) => {
         }
       });
   }
+});
+
+router.post('/copy', (req, res) => {
+  Copy.create(
+    {
+      book: req.body.book
+    }, (err, copy) => {
+      if (err) { res.status(500).send('Server error. Please try again later.'); }
+      else { res.send(copy) }
+    });
+});
+
+router.delete('/copy/:id', (req, res) => {
+  Copy.findByIdAndRemove(req.params.id, (err, copy) => {
+    if (err) { res.status(500).send('Server error. Please try again later.'); }
+    else { res.send(copy) }
+  });
 });
 
 router.get('/search', TokenVerification, (req, res) => {
@@ -76,18 +93,11 @@ router.get('/:id', TokenVerification, (req, res) => {
     else {
       Copy.find({ book: req.params.id }, (err, copies) => {
         if (err) { res.status(500).send('Server error. Please try again later.'); }
-        else if (copies.length == 0) { res.status(500).send('Copies not found.'); }
         else {
           res.send({ book: book, copies: copies });
         }
       });
     }
-  });
-});
-
-router.get('/copy/:id', (req, res) => {
-  Copy.find({ _id: req.params.id }).exec((err, copy) => {
-    res.send(copy);
   });
 });
 

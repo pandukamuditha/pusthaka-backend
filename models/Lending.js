@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const { Schema } = require('mongoose');
 
 const lendingSchema = Schema({
+  copy: {
+    type: Schema.Types.ObjectId,
+    ref: 'Copy',
+    required: true
+  },
   issuedDate: {
     type: Date,
     required: true,
@@ -12,10 +17,11 @@ const lendingSchema = Schema({
   fine: {
     type: Number,
   },
-  patron: [{
+  user: {
     type: Schema.Types.ObjectId,
-    ref: 'Patron',
-  }],
+    ref: 'User',
+    required: true
+  },
 });
 
 module.exports = mongoose.model('Lending', lendingSchema);
