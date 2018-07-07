@@ -25,7 +25,7 @@ router.post('/login', (req, res) => {
     });
 
     // Sending the token
-    res.status(200).send({ auth: true, token, expiresIn: 86400, role: user.role });
+    res.status(200).send({ auth: true, token, expiresIn: 86400, userRole: user.role, userId: user._id });
   });
 });
 
